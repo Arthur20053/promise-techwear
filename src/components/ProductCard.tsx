@@ -1,14 +1,22 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
+  id: number;
   name: string;
   price: number;
   image: string;
-  category?: string;
+  category: string;
 }
 
-const ProductCard = ({ name, price, image, category }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, image, category }: ProductCardProps) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart({ id, name, price, image, category });
+  };
+
   return (
     <Card className="group overflow-hidden border-border hover:border-primary transition-all duration-300">
       <div className="aspect-square overflow-hidden bg-muted">
@@ -29,7 +37,7 @@ const ProductCard = ({ name, price, image, category }: ProductCardProps) => {
           <span className="text-lg font-bold text-primary">
             R$ {price.toFixed(2)}
           </span>
-          <Button size="sm" className="bg-primary hover:bg-primary/90">
+          <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={handleAddToCart}>
             Adicionar
           </Button>
         </div>
