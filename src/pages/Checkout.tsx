@@ -1,21 +1,21 @@
-import { useCart } from "@/contexts/CartContext";
+import { useCartStore } from "@/stores/cartStore";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const Checkout = () => {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
+
+  const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Pedido realizado com sucesso!",
+    toast.success("Pedido realizado com sucesso!", {
       description: "Você receberá um email de confirmação em breve.",
     });
     clearCart();
@@ -23,7 +23,7 @@ const Checkout = () => {
   };
 
   if (items.length === 0) {
-    navigate("/cart");
+    navigate("/");
     return null;
   }
 
@@ -127,12 +127,12 @@ const Checkout = () => {
               <h2 className="text-xl font-bold text-foreground">Resumo</h2>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
+                  <div key={item.variantId} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {item.name} x{item.quantity}
+                      {item.product.node.title} x{item.quantity}
                     </span>
                     <span className="text-foreground">
-                      R$ {(item.price * item.quantity).toFixed(2)}
+                      {item.price.currencyCode} {(parseFloat(item.price.amount) * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -140,7 +140,7 @@ const Checkout = () => {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
-                  <span>R$ {totalPrice.toFixed(2)}</span>
+                  <span>{items[0]?.price.currencyCode || 'R$'} {totalPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Frete</span>
@@ -148,7 +148,7 @@ const Checkout = () => {
                 </div>
                 <div className="flex justify-between text-xl font-bold pt-2 border-t">
                   <span>Total</span>
-                  <span className="text-primary">R$ {totalPrice.toFixed(2)}</span>
+                  <span className="text-primary">{items[0]?.price.currencyCode || 'R$'} {totalPrice.toFixed(2)}</span>
                 </div>
               </div>
             </Card>

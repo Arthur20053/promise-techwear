@@ -1,17 +1,10 @@
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import ProductCard from "./ProductCard";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-}
+import { ShopifyProduct } from "@/lib/shopify";
 
 interface ProductCarouselProps {
   title: string;
-  products: Product[];
+  products: ShopifyProduct[];
 }
 
 const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
@@ -24,8 +17,8 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-4 pb-4">
             {products.map((product) => (
-              <div key={product.id} className="w-[280px] flex-shrink-0">
-                <ProductCard {...product} />
+              <div key={product.node.id} className="w-[280px] flex-shrink-0">
+                <ProductCard product={product} />
               </div>
             ))}
           </div>
